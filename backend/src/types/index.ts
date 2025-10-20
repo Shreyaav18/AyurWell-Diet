@@ -23,7 +23,7 @@ export interface IPatient extends Document {
   height: number; // in cm
   weight: number; // in kg
   activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very-active';
-  doctorId: string;
+  doctorId: object;
   createdAt: Date;
   updatedAt: Date;
 }
