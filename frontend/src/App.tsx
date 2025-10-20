@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './pages/Dashboard';
+import FoodList from './pages/FoodList';
+import PatientList from './pages/PatientList';
 import PrivateRoute from './components/common/PrivateRoute';
 
 const App: React.FC = () => {
@@ -16,6 +18,22 @@ const App: React.FC = () => {
           element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/foods"
+          element={
+            <PrivateRoute>
+              <FoodList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/patients"
+          element={
+            <PrivateRoute>
+              <PatientList />
             </PrivateRoute>
           }
         />
