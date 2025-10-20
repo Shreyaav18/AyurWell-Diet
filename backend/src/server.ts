@@ -4,8 +4,8 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import connectDB from './config/database';
 import { errorHandler } from './middleware/errorHandler';
-
-// Import routes
+import foodRoutes from './routes/foodRoutes';
+import patientRoutes from './routes/patientRoutes';
 import authRoutes from './routes/authRoutes';
 
 // Load environment variables
@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/foods', foodRoutes);
+app.use('/api/patients', patientRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
