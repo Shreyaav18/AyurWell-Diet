@@ -46,7 +46,7 @@ export const getPatientById = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    if (req.user?.role !== 'admin' && patient.doctorId.toString() !== req.user?.userId) {
+    if (req.user?.role !== 'admin' && patient.doctorId.toString() == req.user?.userId) {
       res.status(403).json({
         success: false,
         message: 'Not authorized to access this patient'

@@ -7,6 +7,9 @@ import { errorHandler } from './middleware/errorHandler';
 import foodRoutes from './routes/foodRoutes';
 import patientRoutes from './routes/patientRoutes';
 import authRoutes from './routes/authRoutes';
+import questionRoutes from './routes/questionRoutes';
+import assessmentRoutes from './routes/assessmentRoutes';
+
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +34,8 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use('/api/auth', authRoutes);
 app.use('/api/foods', foodRoutes);
 app.use('/api/patients', patientRoutes);
+app.use('/api/questions', questionRoutes);
+app.use('/api/assessments', assessmentRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
