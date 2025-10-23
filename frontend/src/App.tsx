@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard';
 import FoodList from './pages/FoodList';
 import PatientList from './pages/PatientList';
 import PrivateRoute from './components/common/PrivateRoute';
+import Newpatient from './components/auth/Newpatient';
+import PatientProfile from './pages/PatientProfile';
 
 const App: React.FC = () => {
   return (
@@ -38,6 +40,17 @@ const App: React.FC = () => {
           }
         />
         <Route path="/" element={<Navigate to="/login" />} />
+        <Route
+          path="/patients/new"
+          element={
+            <PrivateRoute>
+              <Newpatient />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/patients/:id" element={<PrivateRoute>
+          <PatientProfile />
+        </PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );

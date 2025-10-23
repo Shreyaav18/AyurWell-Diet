@@ -240,8 +240,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     justifyContent: 'center', 
     alignItems: 'center',
-    height: '100vh',
+    height: '80%',
     backgroundColor: '#f0f2f5',
+    borderRadius: '30px',
   },
   card: {
     backgroundColor: '#fff',  
