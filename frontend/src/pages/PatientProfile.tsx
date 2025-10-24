@@ -2,13 +2,17 @@ import React from "react";
 import { useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 import { patientService } from '../services/patientService';
+import { assessmentService } from '../services/assessmentService';
 import { useNavigate } from 'react-router-dom';
+import QuizComponent from '../components/layout/QuizComponent';
 
 const PatientProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [patientData, setPatientData] = useState<any>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lastAssessment, setLastAssessment] = useState<any>(null);
+  const [showQuiz, setShowQuiz] = useState(false);
   const navigate = useNavigate();
   
     useEffect(() => {
@@ -28,6 +32,23 @@ const PatientProfile: React.FC = () => {
     };
       fetchPatientData(); 
    }, [id]);
+
+   useEffect(() => {
+    const fetchLastAssessment = async () => {
+      try {
+        if (id) {
+          const response = await assessmentService.getPatientAssessments(id);
+          if (response.data && response.data.length > 0) {
+            setLastAssessment(response.data[0]); // Most recent assessment
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch assessment:', err);
+      }
+    };
+
+    fetchLastAssessment();
+  }, [id]);
 
   return (
   <div style={styles.mainContainer}>
@@ -125,8 +146,66 @@ const PatientProfile: React.FC = () => {
           {/* Left Column */}
           <div style={styles.leftColumn}>
             {/* Quiz Section */}
-            <div style={styles.section}>
-              <h3>Prakriti Assessment</h3>
+
+                <div style={styles.section}>
+                  <h3>Prakriti Assessment</h3>
+                  
+                  {lastAssessment ? (
+                    <div>
+                      <p style={styles.assessmentInfo}>
+                        Last Assessment: {new Date(lastAssessment.assessmentDate).toLocaleDateString()}
+                      </p>
+                      
+                      <div style={styles.doshaResults}>
+                        <div style={styles.doshaBar}>
+                          <span>Vata: {lastAssessment.percentages.vata}%</span>
+                          <div style={styles.progressBarContainer}>
+                            <div style={{...styles.progressBarFill, width: `${lastAssessment.percentages.vata}%`, backgroundColor: '#2196F3'}}></div>
+                          </div>
+                        </div>
+                        
+                        <div style={styles.doshaBar}>
+                          <span>Pitta: {lastAssessment.percentages.pitta}%</span>
+                          <div style={styles.progressBarContainer}>
+                            <div style={{...styles.progressBarFill, width: `${lastAssessment.percentages.pitta}%`, backgroundColor: '#FF5722'}}></div>
+                          </div>
+                        </div>
+                        
+                        <div style={styles.doshaBar}>
+                          <span>Kapha: {lastAssessment.percentages.kapha}%</span>
+                          <div style={styles.progressBarContainer}>
+                            <div style={{...styles.progressBarFill, width: `${lastAssessment.percentages.kapha}%`, backgroundColor: '#4CAF50'}}></div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <p style={styles.resultDosha}>
+                        Result: <strong>{lastAssessment.resultDoshaType.toUpperCase()}</strong>
+                      </p>
+                      
+                      <button style={styles.quizButton} onClick={() => setShowQuiz(true)}>
+                        Retake Assessment
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={styles.noAssessment}>No assessment taken yet</p>
+                      <button style={styles.quizButton} onClick={() => setShowQuiz(true)}>
+                        Take Assessment
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {showQuiz && (
+                    <QuizComponent 
+                      patientId={id!} 
+                      onClose={() => setShowQuiz(false)}
+                      onComplete={(assessment: any) => {
+                        setLastAssessment(assessment);
+                        setShowQuiz(false);
+                      }}
+                    />
+                  )}
               {/* We'll fill this in Step 4 */}
               <p>Quiz section placeholder</p>
             </div>
@@ -137,7 +216,7 @@ const PatientProfile: React.FC = () => {
               {/* We'll fill this in Step 5 */}
               <p>Progress bar placeholder</p>
             </div>
-          </div>
+        
 
           {/* Right Column */}
           <div style={styles.rightColumn}>
@@ -324,6 +403,50 @@ const styles = {
       color: '#999',
       fontStyle: 'italic' as const,
       margin: 0,
+    },
+    assessmentInfo: {
+  color: '#666',
+  fontSize: '14px',
+  marginBottom: '15px',
+    },
+    doshaResults: {
+      marginBottom: '20px',
+    },
+    doshaBar: {
+      marginBottom: '12px',
+    },
+    progressBarContainer: {
+      width: '100%',
+      height: '20px',
+      backgroundColor: '#e0e0e0',
+      borderRadius: '10px',
+      overflow: 'hidden',
+      marginTop: '5px',
+    },
+    progressBarFill: {
+      height: '100%',
+      transition: 'width 0.3s ease',
+    },
+    resultDosha: {
+      fontSize: '16px',
+      marginBottom: '15px',
+      textAlign: 'center' as const,
+    },
+    noAssessment: {
+      color: '#999',
+      fontStyle: 'italic' as const,
+      marginBottom: '15px',
+    },
+    quizButton: {
+      width: '100%',
+      padding: '12px',
+      backgroundColor: '#4CAF50',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
     },
 };
 
