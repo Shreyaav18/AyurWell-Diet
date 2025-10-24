@@ -10,24 +10,24 @@ export interface IFoodItem extends Document {
   protein: number;
   carbs: number;
   fat: number;
-  fiber: number;
+  fiber?: number | null;
   vitamins: {
-    vitaminA?: number;
-    vitaminC?: number;
-    vitaminD?: number;
-    vitaminE?: number;
-    vitaminK?: number;
-    vitaminB12?: number;
-    folate?: number;
+    vitaminA?: number | null;
+    vitaminC?: number | null;
+    vitaminD?: number | null;
+    vitaminE?: number | null;
+    vitaminK?: number | null;
+    vitaminB12?: number | null;
+    folate?: number | null;
   };
   minerals: {
-    calcium?: number;
-    iron?: number;
-    magnesium?: number;
-    phosphorus?: number;
-    potassium?: number;
-    sodium?: number;
-    zinc?: number;
+    calcium?: number | null;
+    iron?: number | null;
+    magnesium?: number | null;
+    phosphorus?: number | null;
+    potassium?: number | null;
+    sodium?: number | null;
+    zinc?: number | null;
   };
   ayurvedicProperties: {
     rasa: string[];
@@ -53,12 +53,13 @@ const foodItemSchema = new Schema<IFoodItem>(
     category: {
       type: String,
       required: [true, 'Category is required'],
+      lowercase: true,  // Convert to lowercase to match JSON
       enum: ['grains', 'vegetables', 'fruits', 'legumes', 'dairy', 'meat', 'fish', 'nuts', 'seeds', 'oils', 'spices', 'beverages', 'sweets', 'other']
     },
     cuisineType: {
       type: String,
       required: [true, 'Cuisine type is required'],
-      enum: ['indian', 'international', 'multicultural']
+      // Removed enum to allow any cuisine type from JSON
     },
     servingSize: {
       type: Number,
@@ -68,6 +69,7 @@ const foodItemSchema = new Schema<IFoodItem>(
     servingUnit: {
       type: String,
       required: [true, 'Serving unit is required'],
+      lowercase: true,
       enum: ['g', 'ml', 'cup', 'piece', 'tablespoon', 'teaspoon']
     },
     calories: {
@@ -92,64 +94,70 @@ const foodItemSchema = new Schema<IFoodItem>(
     },
     fiber: {
       type: Number,
-      default: 0,
-      min: 0
+      default: null  // Allow null values
     },
     vitamins: {
-      vitaminA: { type: Number, default: 0 },
-      vitaminC: { type: Number, default: 0 },
-      vitaminD: { type: Number, default: 0 },
-      vitaminE: { type: Number, default: 0 },
-      vitaminK: { type: Number, default: 0 },
-      vitaminB12: { type: Number, default: 0 },
-      folate: { type: Number, default: 0 }
+      vitaminA: { type: Number, default: null },
+      vitaminC: { type: Number, default: null },
+      vitaminD: { type: Number, default: null },
+      vitaminE: { type: Number, default: null },
+      vitaminK: { type: Number, default: null },
+      vitaminB12: { type: Number, default: null },
+      folate: { type: Number, default: null }
     },
     minerals: {
-      calcium: { type: Number, default: 0 },
-      iron: { type: Number, default: 0 },
-      magnesium: { type: Number, default: 0 },
-      phosphorus: { type: Number, default: 0 },
-      potassium: { type: Number, default: 0 },
-      sodium: { type: Number, default: 0 },
-      zinc: { type: Number, default: 0 }
+      calcium: { type: Number, default: null },
+      iron: { type: Number, default: null },
+      magnesium: { type: Number, default: null },
+      phosphorus: { type: Number, default: null },
+      potassium: { type: Number, default: null },
+      sodium: { type: Number, default: null },
+      zinc: { type: Number, default: null }
     },
     ayurvedicProperties: {
       rasa: [{
         type: String,
+        lowercase: true,
         enum: ['sweet', 'sour', 'salty', 'bitter', 'pungent', 'astringent']
       }],
       virya: {
         type: String,
-        enum: ['hot', 'cold'],
+        lowercase: true,
+        enum: ['hot', 'cold', 'neutral'],  // Added 'neutral' from your JSON
         required: true
       },
       vipaka: {
         type: String,
+        lowercase: true,
         enum: ['sweet', 'sour', 'pungent'],
         required: true
       },
       guna: [{
         type: String,
-        enum: ['heavy', 'light', 'oily', 'dry', 'hot', 'cold', 'stable', 'mobile', 'soft', 'hard', 'smooth', 'rough', 'cloudy', 'clear', 'gross', 'subtle']
+        lowercase: true,
+        enum: ['heavy', 'light', 'oily', 'dry', 'hot', 'cold', 'stable', 'mobile', 'soft', 'hard', 'smooth', 'rough', 'cloudy', 'clear', 'gross', 'subtle', 'balanced']  // Added 'balanced'
       }],
       digestibilityScore: {
         type: Number,
         min: 1,
-        max: 10,
+        max: 100,  // Changed from 10 to 100 to match your JSON (has value 50)
         required: true
       }
     },
     suitableForDoshas: [{
       type: String,
+      lowercase: true,
       enum: ['vata', 'pitta', 'kapha', 'all']
     }],
     seasonalRecommendation: [{
       type: String,
-      enum: ['spring', 'summer', 'autumn', 'winter', 'all']
+      lowercase: true,
+      enum: ['spring', 'summer', 'autumn', 'winter', 'all', 'all_seasons']  // Added 'all_seasons'
     }]
   },
   {
-    timestamps: true
+    timestamps: false,  // CRITICAL FIX: Disable auto timestamps
+    strict: false       // Allow additional fields from JSON
   }
 );
 
