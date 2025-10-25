@@ -7,21 +7,32 @@ interface IMealItem {
   unit: string;
 }
 
+interface INutritionalTotals {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+}
+
+
 interface IMeal {
   mealType: string;
   timeSlot: string;
   items: IMealItem[];
   notes?: string;
+  nutritionalTotals?: INutritionalTotals; 
 }
 
 interface IDayPlan {
   dayNumber: number;
   meals: IMeal[];
+  dailyNutritionalTotals?: INutritionalTotals; 
 }
 
+// Add to IDietChart interface
 export interface IDietChart extends Document {
   patientId: mongoose.Types.ObjectId;
-  doctorId: mongoose.Types.ObjectId;
   chartType: string;
   startDate: Date;
   endDate: Date;
@@ -29,9 +40,12 @@ export interface IDietChart extends Document {
   dietaryRestrictions: string[];
   status: string;
   dayPlans: IDayPlan[];
+  createdBy: mongoose.Types.ObjectId; 
+  chartNutritionalAverage?: INutritionalTotals; 
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 const dietChartSchema = new Schema<IDietChart>(
   {
@@ -39,11 +53,6 @@ const dietChartSchema = new Schema<IDietChart>(
       type: Schema.Types.ObjectId,
       ref: 'Patient',
       required: [true, 'Patient ID is required']
-    },
-    doctorId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: [true, 'Doctor ID is required']
     },
     chartType: {
       type: String,
@@ -113,9 +122,24 @@ const dietChartSchema = new Schema<IDietChart>(
         notes: {
           type: String,
           trim: true
-        }
-      }]
+        },
+        nutritionalTotals: {
+          calories: { type: Number, default: 0 },
+          protein: { type: Number, default: 0 },
+          carbs: { type: Number, default: 0 },
+          fat: { type: Number, default: 0 },
+          fiber: { type: Number, default: 0 }
+          }
+      }],
+      dailyNutritionalTotals: { 
+        calories: { type: Number, default: 0 },
+        protein: { type: Number, default: 0 },
+        carbs: { type: Number, default: 0 },
+        fat: { type: Number, default: 0 },
+        fiber: { type: Number, default: 0 }
+      }
     }]
+
   },
   {
     timestamps: true
