@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { patientService } from '../services/patientService';
 import { assessmentService } from '../services/assessmentService';
 import { useNavigate } from 'react-router-dom';
+import { medicalHistoryService } from "../services/medicalHistoryService";
+import { styles } from './styles';
 import QuizComponent from '../components/layout/QuizComponent';
 
 const PatientProfile: React.FC = () => {
@@ -13,6 +15,8 @@ const PatientProfile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [lastAssessment, setLastAssessment] = useState<any>(null);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [medicalHistoryCount, setMedicalHistoryCount] = useState(0);
+  const [hasDietPlan, setHasDietPlan] = useState(false);
   const navigate = useNavigate();
   
     useEffect(() => {
@@ -50,6 +54,40 @@ const PatientProfile: React.FC = () => {
     fetchLastAssessment();
   }, [id]);
 
+  useEffect(() => {
+  const fetchMedicalHistory = async () => {
+    try {
+      if (id) {
+        // Assuming you have this endpoint
+        const response = await medicalHistoryService.getPatientHistory(id);
+        setMedicalHistoryCount(response.data.length);
+      }
+    } catch (err) {
+      console.error('Failed to fetch medical history:', err);
+    }
+  };
+
+  fetchMedicalHistory();
+}, [id]);
+
+
+// For diet plan - add later when you have the endpoint
+// For now, we'll leave it as false
+    const calculateProgress = () => {
+      const milestones = [
+        { name: 'Profile Created', completed: !!patientData },
+        { name: 'Assessment Completed', completed: !!lastAssessment },
+        { name: 'Medical History Added', completed: medicalHistoryCount > 0 },
+        { name: 'Diet Plan Assigned', completed: hasDietPlan },
+        { name: 'Measurements Recorded', completed: patientData?.height > 0 && patientData?.weight > 0 },
+      ];
+
+      const completedCount = milestones.filter(m => m.completed).length;
+      const percentage = Math.round((completedCount / milestones.length) * 100);
+
+      return { milestones, percentage };
+    };
+    
   return (
   <div style={styles.mainContainer}>
     {loading && <div style={styles.loading}>Loading patient data...</div>}
@@ -206,26 +244,199 @@ const PatientProfile: React.FC = () => {
                       }}
                     />
                   )}
-              {/* We'll fill this in Step 4 */}
-              <p>Quiz section placeholder</p>
+            
             </div>
 
             {/* Progress Bar Section */}
-            <div style={styles.section}>
-              <h3>Progress Tracker</h3>
-              {/* We'll fill this in Step 5 */}
-              <p>Progress bar placeholder</p>
-            </div>
+          <div style={styles.section}>
+            <h3>Progress Tracker</h3>
+            
+            {(() => {
+              const { milestones, percentage } = calculateProgress();
+              
+              return (
+                <>
+                  {/* Circular Progress */}
+                  <div style={styles.progressCircleContainer}>
+                    <div style={styles.progressCircle}>
+                      <svg width="120" height="120">
+                        <circle
+                          cx="60"
+                          cy="60"
+                          r="50"
+                          stroke="#e0e0e0"
+                          strokeWidth="10"
+                          fill="none"
+                        />
+                        <circle
+                          cx="60"
+                          cy="60"
+                          r="50"
+                          stroke="#4CAF50"
+                          strokeWidth="10"
+                          fill="none"
+                          strokeDasharray={`${(percentage / 100) * 314} 314`}
+                          strokeDashoffset="0"
+                          transform="rotate(-90 60 60)"
+                          style={{ transition: 'stroke-dasharray 0.5s ease' }}
+                        />
+                      </svg>
+                      <div style={styles.percentageText}>{percentage}%</div>
+                    </div>
+                    <p style={styles.progressLabel}>Profile Completion</p>
+                  </div>
+
+                  {/* Milestones Checklist */}
+                  <div style={styles.milestonesList}>
+                    {milestones.map((milestone, index) => (
+                      <div key={index} style={styles.milestoneItem}>
+                        <span style={{
+                          ...styles.checkmark,
+                          backgroundColor: milestone.completed ? '#4CAF50' : '#e0e0e0',
+                          color: milestone.completed ? 'white' : '#999'
+                        }}>
+                          {milestone.completed ? '✓' : '○'}
+                        </span>
+                        <span style={{
+                          ...styles.milestoneName,
+                          color: milestone.completed ? '#333' : '#999'
+                        }}>
+                          {milestone.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
         
 
           {/* Right Column */}
           <div style={styles.rightColumn}>
             {/* BMI Index Section */}
-            <div style={styles.section}>
-              <h3>BMI Index</h3>
-              {/* We'll fill this in Step 6 */}
-              <p>BMI calculator placeholder</p>
-            </div>
+            {/* BMI Index Section */}
+<div style={styles.section}>
+  <h3>BMI Index</h3>
+  
+  {(() => {
+    if (!patientData?.height || !patientData?.weight) {
+      return <p style={styles.noData}>Height and weight not recorded</p>;
+    }
+
+    // Calculate BMI
+    const heightInMeters = patientData.height / 100;
+    const bmi = (patientData.weight / (heightInMeters * heightInMeters)).toFixed(1);
+    const bmiValue = parseFloat(bmi);
+
+    // Determine category and color
+    let category = '';
+    let color = '';
+    let advice = '';
+
+    if (bmiValue < 18.5) {
+      category = 'Underweight';
+      color = '#2196F3';
+      advice = 'Consider increasing caloric intake with nutrient-dense foods';
+    } else if (bmiValue >= 18.5 && bmiValue < 25) {
+      category = 'Normal';
+      color = '#4CAF50';
+      advice = 'Maintain your current healthy lifestyle';
+    } else if (bmiValue >= 25 && bmiValue < 30) {
+      category = 'Overweight';
+      color = '#FF9800';
+      advice = 'Consider balanced diet and regular physical activity';
+    } else {
+      category = 'Obese';
+      color = '#F44336';
+      advice = 'Consult with healthcare provider for weight management plan';
+    }
+
+    // Calculate gauge position (0-100 scale, capped at 40 BMI for display)
+    const gaugePosition = Math.min((bmiValue / 40) * 100, 100);
+
+    return (
+      <>
+        {/* BMI Value Display */}
+        <div style={styles.bmiValueContainer}>
+          <div style={{...styles.bmiValue, color: color}}>
+            {bmi}
+          </div>
+          <div style={styles.bmiUnit}>kg/m²</div>
+        </div>
+
+        {/* Category Badge */}
+        <div style={{...styles.categoryBadge, backgroundColor: color}}>
+          {category}
+        </div>
+
+        {/* Visual Gauge */}
+        <div style={styles.gaugeContainer}>
+          <div style={styles.gaugeBar}>
+            <div style={styles.gaugeSegment1}></div>
+            <div style={styles.gaugeSegment2}></div>
+            <div style={styles.gaugeSegment3}></div>
+            <div style={styles.gaugeSegment4}></div>
+          </div>
+          <div 
+            style={{
+              ...styles.gaugePointer,
+              left: `${gaugePosition}%`
+            }}
+          >
+            <div style={{...styles.pointerTriangle, borderBottomColor: color}}></div>
+          </div>
+        </div>
+
+        {/* BMI Scale Labels */}
+        <div style={styles.scaleLabels}>
+          <span style={styles.scaleLabel}>15</span>
+          <span style={styles.scaleLabel}>18.5</span>
+          <span style={styles.scaleLabel}>25</span>
+          <span style={styles.scaleLabel}>30</span>
+          <span style={styles.scaleLabel}>40</span>
+        </div>
+
+        {/* Category Legend */}
+        <div style={styles.legendContainer}>
+          <div style={styles.legendItem}>
+            <div style={{...styles.legendColor, backgroundColor: '#2196F3'}}></div>
+            <span style={styles.legendText}>Underweight</span>
+          </div>
+          <div style={styles.legendItem}>
+            <div style={{...styles.legendColor, backgroundColor: '#4CAF50'}}></div>
+            <span style={styles.legendText}>Normal</span>
+          </div>
+          <div style={styles.legendItem}>
+            <div style={{...styles.legendColor, backgroundColor: '#FF9800'}}></div>
+            <span style={styles.legendText}>Overweight</span>
+          </div>
+          <div style={styles.legendItem}>
+            <div style={{...styles.legendColor, backgroundColor: '#F44336'}}></div>
+            <span style={styles.legendText}>Obese</span>
+          </div>
+        </div>
+
+        {/* Measurements */}
+        <div style={styles.measurementsContainer}>
+          <div style={styles.measurement}>
+            <span style={styles.measurementLabel}>Height</span>
+            <span style={styles.measurementValue}>{patientData.height} cm</span>
+          </div>
+          <div style={styles.measurement}>
+            <span style={styles.measurementLabel}>Weight</span>
+            <span style={styles.measurementValue}>{patientData.weight} kg</span>
+          </div>
+        </div>
+
+        {/* Advice */}
+        <div style={styles.adviceContainer}>
+          <p style={styles.adviceText}>{advice}</p>
+        </div>
+      </>
+    );
+  })()}
+</div>
 
             {/* Diet Charts Section */}
             <div style={styles.section}>
@@ -248,207 +459,7 @@ const PatientProfile: React.FC = () => {
 );
 };
 
-const styles = {
-    mainContainer: {
-        padding: '20px',
-        maxWidth: '1400px',
-        margin: '0 auto',
-        backgroundColor: '#f5f5f5',
-    },
-    loading: {
-        textAlign: 'center' as const,
-        padding: '40px',
-        fontSize: '18px',
-    },
-    error: {
-        backgroundColor: '#ffebee',
-        color: '#c62828',
-        padding: '15px',
-        borderRadius: '4px',
-        marginBottom: '20px',
-    },
-    patientInfoSection: {
-        backgroundColor: '#fff',
-        padding: '30px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        marginBottom: '20px',
-    },
-    gridContainer: {
-        display: 'grid',
-        gridTemplateColumns: '2fr 1fr',
-        gap: '20px',
-        marginBottom: '20px',
-    },
-    leftColumn: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        gap: '20px',
-    },
-    rightColumn: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        gap: '20px',
-    },
-    section: {
-        backgroundColor: '#fff',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    },
-    timelineSection: {
-        backgroundColor: '#fff',
-        padding: '30px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  },
-      headerRow: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '20px',
-      borderBottom: '2px solid #e0e0e0',
-      paddingBottom: '15px',
-    },
-    patientName: {
-      margin: 0,
-      color: '#333',
-      fontSize: '28px',
-    },
-    actionButtons: {
-      display: 'flex',
-      gap: '10px',
-    },
-    editButton: {
-      padding: '8px 16px',
-      backgroundColor: '#2196F3',
-      color: 'white',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '14px',
-    },
-    backButton: {
-      padding: '8px 16px',
-      backgroundColor: '#757575',
-      color: 'white',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '14px',
-    },
-    infoGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: '15px',
-      marginBottom: '20px',
-    },
-    infoItem: {
-      display: 'flex',
-      flexDirection: 'column' as const,
-      gap: '5px',
-    },
-    label: {
-      fontSize: '12px',
-      color: '#666',
-      fontWeight: 'bold',
-      textTransform: 'uppercase' as const,
-    },
-    value: {
-      fontSize: '16px',
-      color: '#333',
-    },
-    doshaBadge: {
-      backgroundColor: '#e3f2fd',
-      padding: '4px 12px',
-      borderRadius: '16px',
-      display: 'inline-block',
-      fontWeight: 'bold',
-      textTransform: 'capitalize' as const,
-      color: '#1976d2',
-    },
-    conditionsSection: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '20px',
-      marginTop: '20px',
-    },
-    conditionBlock: {
-      backgroundColor: '#f9f9f9',
-      padding: '15px',
-      borderRadius: '6px',
-    },
-    subHeading: {
-      margin: '0 0 10px 0',
-      fontSize: '16px',
-      color: '#555',
-    },
-    tagContainer: {
-      display: 'flex',
-      flexWrap: 'wrap' as const,
-      gap: '8px',
-    },
-    tag: {
-      backgroundColor: '#e8f5e9',
-      color: '#2e7d32',
-      padding: '5px 12px',
-      borderRadius: '12px',
-      fontSize: '14px',
-    },
-    allergyTag: {
-      backgroundColor: '#ffebee',
-      color: '#c62828',
-    },
-    noData: {
-      color: '#999',
-      fontStyle: 'italic' as const,
-      margin: 0,
-    },
-    assessmentInfo: {
-  color: '#666',
-  fontSize: '14px',
-  marginBottom: '15px',
-    },
-    doshaResults: {
-      marginBottom: '20px',
-    },
-    doshaBar: {
-      marginBottom: '12px',
-    },
-    progressBarContainer: {
-      width: '100%',
-      height: '20px',
-      backgroundColor: '#e0e0e0',
-      borderRadius: '10px',
-      overflow: 'hidden',
-      marginTop: '5px',
-    },
-    progressBarFill: {
-      height: '100%',
-      transition: 'width 0.3s ease',
-    },
-    resultDosha: {
-      fontSize: '16px',
-      marginBottom: '15px',
-      textAlign: 'center' as const,
-    },
-    noAssessment: {
-      color: '#999',
-      fontStyle: 'italic' as const,
-      marginBottom: '15px',
-    },
-    quizButton: {
-      width: '100%',
-      padding: '12px',
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      fontWeight: 'bold',
-    },
-};
+
 
 
 export default PatientProfile;
