@@ -9,8 +9,9 @@ import patientRoutes from './routes/patientRoutes';
 import authRoutes from './routes/authRoutes';
 import questionRoutes from './routes/questionRoutes';
 import assessmentRoutes from './routes/assessmentRoutes';
-
-
+import dietChartRoutes from './routes/dietChartRoutes';
+import mealSuggestionRoutes from './routes/mealSuggestionRoutes';
+import ayurvedicRoutes from './routes/ayurvedicRoutes';
 // Load environment variables
 dotenv.config();
 
@@ -36,6 +37,9 @@ app.use('/api/foods', foodRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/assessments', assessmentRoutes);
+app.use('/api/diet-charts', dietChartRoutes);
+app.use('/api/meal-suggestions', mealSuggestionRoutes);
+app.use('/api/ayurvedic', ayurvedicRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
