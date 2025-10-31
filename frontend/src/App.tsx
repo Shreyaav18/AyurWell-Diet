@@ -8,6 +8,8 @@ import PatientList from './pages/PatientList';
 import PrivateRoute from './components/common/PrivateRoute';
 import Newpatient from './components/auth/Newpatient';
 import PatientProfile from './pages/PatientProfile';
+import DietChartsList from './components/widgets/DietChartsList';
+import DietChartBuilder from './components/widgets/DietChartBuilder';
 
 const App: React.FC = () => {
   return (
@@ -18,9 +20,8 @@ const App: React.FC = () => {
         <Route
           path="/dashboard"
           element={
-            <PrivateRoute>
+            
               <Dashboard />
-            </PrivateRoute>
           }
         />
         <Route
@@ -40,6 +41,8 @@ const App: React.FC = () => {
           }
         />
         <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/patients/:patientId/diet-charts" element={<DietChartsList />} />
+        
         <Route
           path="/patients/new"
           element={
@@ -48,9 +51,16 @@ const App: React.FC = () => {
             </PrivateRoute>
           }
         />
-        <Route path="/patients/:id" element={<PrivateRoute>
-          <PatientProfile />
-        </PrivateRoute>} />
+
+        <Route 
+          path="/patients/:id" 
+          element={
+            <PrivateRoute>
+                <PatientProfile />
+            </PrivateRoute>} 
+        />
+
+        <Route path="/patients/:patientId/diet-charts/create" element={<DietChartBuilder />} />
       </Routes>
     </BrowserRouter>
   );

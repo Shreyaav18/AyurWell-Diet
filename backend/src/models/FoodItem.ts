@@ -1,6 +1,7 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IFoodItem extends Document {
+  //_id: Types.ObjectId;
   name: string;
   category: string;
   cuisineType: string;
@@ -10,24 +11,24 @@ export interface IFoodItem extends Document {
   protein: number;
   carbs: number;
   fat: number;
-  fiber?: number | null;
+  fiber?: number;  // Remove | null, just use ?
   vitamins: {
-    vitaminA?: number | null;
-    vitaminC?: number | null;
-    vitaminD?: number | null;
-    vitaminE?: number | null;
-    vitaminK?: number | null;
-    vitaminB12?: number | null;
-    folate?: number | null;
+    vitaminA?: number;  // Remove | null from all
+    vitaminC?: number;
+    vitaminD?: number;
+    vitaminE?: number;
+    vitaminK?: number;
+    vitaminB12?: number;
+    folate?: number;
   };
   minerals: {
-    calcium?: number | null;
-    iron?: number | null;
-    magnesium?: number | null;
-    phosphorus?: number | null;
-    potassium?: number | null;
-    sodium?: number | null;
-    zinc?: number | null;
+    calcium?: number;  // Remove | null from all
+    iron?: number;
+    magnesium?: number;
+    phosphorus?: number;
+    potassium?: number;
+    sodium?: number;
+    zinc?: number;
   };
   ayurvedicProperties: {
     rasa: string[];
@@ -38,11 +39,9 @@ export interface IFoodItem extends Document {
   };
   suitableForDoshas: string[];
   seasonalRecommendation: string[];
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-const foodItemSchema = new Schema<IFoodItem>(
+const foodItemSchema = new Schema(
   {
     name: {
       type: String,
@@ -53,13 +52,12 @@ const foodItemSchema = new Schema<IFoodItem>(
     category: {
       type: String,
       required: [true, 'Category is required'],
-      lowercase: true,  // Convert to lowercase to match JSON
+      lowercase: true,
       enum: ['grains', 'vegetables', 'fruits', 'legumes', 'dairy', 'meat', 'fish', 'nuts', 'seeds', 'oils', 'spices', 'beverages', 'sweets', 'other']
     },
     cuisineType: {
       type: String,
       required: [true, 'Cuisine type is required'],
-      // Removed enum to allow any cuisine type from JSON
     },
     servingSize: {
       type: Number,
@@ -94,7 +92,7 @@ const foodItemSchema = new Schema<IFoodItem>(
     },
     fiber: {
       type: Number,
-      default: null  // Allow null values
+      default: null
     },
     vitamins: {
       vitaminA: { type: Number, default: null },
@@ -123,7 +121,7 @@ const foodItemSchema = new Schema<IFoodItem>(
       virya: {
         type: String,
         lowercase: true,
-        enum: ['hot', 'cold', 'neutral'],  // Added 'neutral' from your JSON
+        enum: ['hot', 'cold', 'neutral'],
         required: true
       },
       vipaka: {
@@ -135,12 +133,12 @@ const foodItemSchema = new Schema<IFoodItem>(
       guna: [{
         type: String,
         lowercase: true,
-        enum: ['heavy', 'light', 'oily', 'dry', 'hot', 'cold', 'stable', 'mobile', 'soft', 'hard', 'smooth', 'rough', 'cloudy', 'clear', 'gross', 'subtle', 'balanced']  // Added 'balanced'
+        enum: ['heavy', 'light', 'oily', 'dry', 'hot', 'cold', 'stable', 'mobile', 'soft', 'hard', 'smooth', 'rough', 'cloudy', 'clear', 'gross', 'subtle', 'balanced']
       }],
       digestibilityScore: {
         type: Number,
         min: 1,
-        max: 100,  // Changed from 10 to 100 to match your JSON (has value 50)
+        max: 100,
         required: true
       }
     },
@@ -152,12 +150,12 @@ const foodItemSchema = new Schema<IFoodItem>(
     seasonalRecommendation: [{
       type: String,
       lowercase: true,
-      enum: ['spring', 'summer', 'autumn', 'winter', 'all', 'all_seasons']  // Added 'all_seasons'
+      enum: ['spring', 'summer', 'autumn', 'winter', 'all', 'all_seasons']
     }]
   },
   {
-    timestamps: false,  // CRITICAL FIX: Disable auto timestamps
-    strict: false       // Allow additional fields from JSON
+    timestamps: false,
+    strict: false
   }
 );
 
@@ -165,4 +163,4 @@ foodItemSchema.index({ name: 'text' });
 foodItemSchema.index({ category: 1 });
 foodItemSchema.index({ 'ayurvedicProperties.rasa': 1 });
 
-export default mongoose.model<IFoodItem>('FoodItem', foodItemSchema);
+export default mongoose.model<IFoodItem>('FoodItem', foodItemSchema as any);

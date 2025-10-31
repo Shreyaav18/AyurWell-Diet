@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Patient from '../models/Patient';
+import MedicalHistory from '../models/medicalHistory';
 
 export const getAllPatients = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -74,6 +75,16 @@ export const createPatient = async (req: Request, res: Response): Promise<void> 
     };
 
     const patient = await Patient.create(patientData);
+    if (req.body.medicalConditions && req.body.medicalConditions.length > 0) {
+      await MedicalHistory.create({
+        patientId: patient._id,
+        eventType: 'diagnosis',
+        date: new Date(),
+        title: 'Initial Medical Conditions',
+        description: `Initial medical conditions recorded: ${req.body.medicalConditions.join(', ')}`,
+        createdBy: req.user?.userId
+      });
+    }
 
     res.status(201).json({
       success: true,
