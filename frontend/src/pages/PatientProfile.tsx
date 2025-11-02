@@ -5,6 +5,7 @@ import { patientService } from '../services/patientService';
 import { assessmentService } from '../services/assessmentService';
 import { useNavigate } from 'react-router-dom';
 import { medicalHistoryService } from "../services/medicalHistoryService";
+import DietChartWidget from '../components/widgets/DietChartWidget';
 import { styles } from './styles';
 import QuizComponent from '../components/layout/QuizComponent';
 
@@ -16,7 +17,7 @@ const PatientProfile: React.FC = () => {
   const [lastAssessment, setLastAssessment] = useState<any>(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const [medicalHistoryCount, setMedicalHistoryCount] = useState(0);
-  const [hasDietPlan, setHasDietPlan] = useState(false);
+  const [hasDietPlan] = useState(false);
   const navigate = useNavigate();
   
     useEffect(() => {
@@ -433,26 +434,23 @@ const PatientProfile: React.FC = () => {
         <div style={styles.adviceContainer}>
           <p style={styles.adviceText}>{advice}</p>
         </div>
-      </>
-    );
-  })()}
-</div>
-
+        </>
+        );
+      })()}
+    </div>
             {/* Diet Charts Section */}
-            <div style={styles.section}>
-              <h3>Diet Charts</h3>
-              {/* We'll fill this in Step 7 */}
-              <p>Diet charts placeholder</p>
-            </div>
+            <DietChartWidget patientId={id!} />
           </div>
         </div>
 
-        {/* Medical History Timeline - Full Width */}
+        {/* Medical History Timeline - Full Width 
         <div style={styles.timelineSection}>
           <h3>Medical History Timeline</h3>
-          {/* We'll fill this in Step 8 */}
+           We'll fill this in Step 8 
           <p>Timeline placeholder</p>
         </div>
+        */
+        }
       </>
     )}
   </div>

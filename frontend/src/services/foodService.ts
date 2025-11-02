@@ -23,14 +23,40 @@ export interface Food {
 }
 
 export const foodService = {
-  getAll: async (params?: any) => {
+  getAllFoods: async (params?: { search?: string; category?: string; dosha?: string; page?: number; limit?: number }) => {
     const response = await api.get('/foods', { params });
-    return response.data;
+    // Extract the foods array from nested structure
+    return response.data.data.foods || [];
   },
 
-  getById: async (id: string) => {
+  // Get food item by ID
+  getFoodById: async (id: string) => {
     const response = await api.get(`/foods/${id}`);
-    return response.data;
+    return response.data.data || response.data;
+  },
+
+  // Search foods
+  searchFoods: async (query: string) => {
+    const response = await api.get('/foods/search', {
+      params: { q: query }
+    });
+    return response.data.data?.foods || response.data.foods || [];
+  },
+
+  // Get foods by category
+  getFoodsByCategory: async (category: string) => {
+    const response = await api.get('/foods/category', {
+      params: { category }
+    });
+    return response.data.data?.foods || response.data.foods || [];
+  },
+
+  // Get dosha-compatible foods
+  getDoshaCompatibleFoods: async (doshaType: string) => {
+    const response = await api.get('/foods/dosha', {
+      params: { doshaType }
+    });
+    return response.data.data?.foods || response.data.foods || [];
   },
 
   create: async (data: any) => {
@@ -47,9 +73,11 @@ export const foodService = {
     const response = await api.delete(`/foods/${id}`);
     return response.data;
   },
-
+  
   getCategories: async () => {
     const response = await api.get('/foods/categories');
-    return response.data;
+    return response.data.data || response.data;
   }
 };
+  
+export default foodService;

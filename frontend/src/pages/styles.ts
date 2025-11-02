@@ -248,9 +248,11 @@ checkmark: {
 milestoneName: {
   fontSize: '15px',
 },
+
+
 bmiValueContainer: {
   display: 'flex',
-  alignItems: 'baseline',
+  alignItems: 'center',
   justifyContent: 'center',
   marginBottom: '10px',
 },
@@ -272,7 +274,7 @@ categoryBadge: {
   fontSize: '16px',
   margin: '0 auto 20px',
   display: 'inline-block',
-  width: '100%',
+  width: '80%',
 },
 gaugeContainer: {
   position: 'relative' as const,

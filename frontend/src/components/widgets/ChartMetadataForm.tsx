@@ -47,7 +47,7 @@ const ChartMetadataForm: React.FC<ChartMetadataFormProps> = ({
       
       setEndDate(end.toISOString().split('T')[0]);
     }
-  }, [startDate, chartType]);
+  }, [startDate, chartType, setEndDate]);
 
   const handleAddRestriction = () => {
     if (newRestriction.trim() && !dietaryRestrictions.includes(newRestriction.trim())) {
@@ -79,52 +79,52 @@ const ChartMetadataForm: React.FC<ChartMetadataFormProps> = ({
   return (
     <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.form}>
-        <h3 style={styles.heading}>Chart Details</h3>
+        <div style={styles.headerSection}>
+          <h3 style={styles.heading}>Chart Details</h3>
+          <p style={styles.subheading}>Configure your diet chart parameters</p>
+        </div>
 
         {/* Chart Type */}
         <div style={styles.formGroup}>
-          <label style={styles.label}>Chart Type *</label>
+          <label style={styles.label}>
+            Chart Type <span style={styles.required}>*</span>
+          </label>
           <div style={styles.radioGroup}>
-            <label style={styles.radioLabel}>
-              <input
-                type="radio"
-                name="chartType"
-                value="daily"
-                checked={chartType === 'daily'}
-                onChange={(e) => setChartType(e.target.value as any)}
-                style={styles.radio}
-              />
-              <span>Daily (1 day)</span>
-            </label>
-            <label style={styles.radioLabel}>
-              <input
-                type="radio"
-                name="chartType"
-                value="weekly"
-                checked={chartType === 'weekly'}
-                onChange={(e) => setChartType(e.target.value as any)}
-                style={styles.radio}
-              />
-              <span>Weekly (7 days)</span>
-            </label>
-            <label style={styles.radioLabel}>
-              <input
-                type="radio"
-                name="chartType"
-                value="monthly"
-                checked={chartType === 'monthly'}
-                onChange={(e) => setChartType(e.target.value as any)}
-                style={styles.radio}
-              />
-              <span>Monthly (30 days)</span>
-            </label>
+            {[
+              { value: 'daily', label: 'Daily', days: '1 day' },
+              { value: 'weekly', label: 'Weekly', days: '7 days' },
+              { value: 'monthly', label: 'Monthly', days: '30 days' }
+            ].map((option) => (
+              <label 
+                key={option.value}
+                style={{
+                  ...styles.radioCard,
+                  ...(chartType === option.value ? styles.radioCardActive : {})
+                }}
+              >
+                <input
+                  type="radio"
+                  name="chartType"
+                  value={option.value}
+                  checked={chartType === option.value}
+                  onChange={(e) => setChartType(e.target.value as any)}
+                  style={styles.radioInput}
+                />
+                <div style={styles.radioContent}>
+                  <span style={styles.radioLabel}>{option.label}</span>
+                  <span style={styles.radioDays}>{option.days}</span>
+                </div>
+              </label>
+            ))}
           </div>
         </div>
 
         {/* Date Range */}
         <div style={styles.formRow}>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Start Date *</label>
+            <label style={styles.label}>
+              Start Date <span style={styles.required}>*</span>
+            </label>
             <input
               type="date"
               value={startDate}
@@ -134,12 +134,14 @@ const ChartMetadataForm: React.FC<ChartMetadataFormProps> = ({
             />
           </div>
           <div style={styles.formGroup}>
-            <label style={styles.label}>End Date *</label>
+            <label style={styles.label}>
+              End Date <span style={styles.required}>*</span>
+            </label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              style={styles.input}
+              style={{...styles.input, ...styles.inputDisabled}}
               required
               disabled
             />
@@ -148,28 +150,39 @@ const ChartMetadataForm: React.FC<ChartMetadataFormProps> = ({
 
         {/* Target Calories */}
         <div style={styles.formGroup}>
-          <label style={styles.label}>Target Daily Calories *</label>
-          <input
-            type="number"
-            value={targetCalories}
-            onChange={(e) => setTargetCalories(Number(e.target.value))}
-            style={styles.input}
-            min={500}
-            max={5000}
-            step={50}
-            required
-          />
-          <p style={styles.hint}>Recommended range: 1500-3000 kcal/day based on patient profile</p>
+          <label style={styles.label}>
+            Target Daily Calories <span style={styles.required}>*</span>
+          </label>
+          <div style={styles.calorieInputWrapper}>
+            <input
+              type="number"
+              value={targetCalories}
+              onChange={(e) => setTargetCalories(Number(e.target.value))}
+              style={styles.calorieInput}
+              min={500}
+              max={5000}
+              step={50}
+              required
+            />
+            <span style={styles.calorieUnit}>kcal/day</span>
+          </div>
+          <div style={styles.hintBox}>
+            <span style={styles.hintIcon}>💡</span>
+            <span style={styles.hint}>Recommended range: 1500-3000 kcal/day based on patient profile</span>
+          </div>
         </div>
 
         {/* Patient Allergies (Read-only) */}
         {patientAllergies.length > 0 && (
           <div style={styles.formGroup}>
-            <label style={styles.label}>Patient Allergies (Auto-excluded)</label>
+            <label style={styles.label}>
+              <span style={styles.allergyIcon}>⚠️</span>
+              Patient Allergies (Auto-excluded)
+            </label>
             <div style={styles.tagContainer}>
               {patientAllergies.map((allergy, index) => (
                 <span key={index} style={styles.allergyTag}>
-                  ⚠️ {allergy}
+                  {allergy}
                 </span>
               ))}
             </div>
@@ -184,7 +197,7 @@ const ChartMetadataForm: React.FC<ChartMetadataFormProps> = ({
               type="text"
               value={newRestriction}
               onChange={(e) => setNewRestriction(e.target.value)}
-              placeholder="e.g., gluten-free, low-sodium"
+              placeholder="e.g., gluten-free, low-sodium, vegan"
               style={styles.restrictionInput}
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
@@ -198,7 +211,8 @@ const ChartMetadataForm: React.FC<ChartMetadataFormProps> = ({
               onClick={handleAddRestriction}
               style={styles.addButton}
             >
-              + Add
+              <span style={styles.addButtonIcon}>+</span>
+              Add
             </button>
           </div>
           {dietaryRestrictions.length > 0 && (
@@ -222,21 +236,43 @@ const ChartMetadataForm: React.FC<ChartMetadataFormProps> = ({
         {/* Submit */}
         <div style={styles.submitContainer}>
           <button type="submit" style={styles.nextButton}>
-            Next: Plan Meals →
+            <span>Next: Plan Meals</span>
+            <span style={styles.buttonArrow}>→</span>
           </button>
         </div>
       </form>
 
       {/* Info Panel */}
       <div style={styles.infoPanel}>
-        <h4 style={styles.infoPanelHeading}>💡 Tips for Diet Chart Creation</h4>
+        <div style={styles.infoPanelHeader}>
+          <span style={styles.infoPanelIcon}>💡</span>
+          <h4 style={styles.infoPanelHeading}>Tips for Diet Chart Creation</h4>
+        </div>
         <ul style={styles.infoList}>
-          <li>Start with weekly plans for better variety and balance</li>
-          <li>Target calories are calculated based on patient's BMR and activity level</li>
-          <li>Patient allergies are automatically excluded from food suggestions</li>
-          <li>You can add additional dietary restrictions like vegan, keto, etc.</li>
-          <li>Each meal can be auto-filled with AI suggestions or manually customized</li>
-          <li>Real-time Ayurvedic compliance feedback will guide your selections</li>
+          <li style={styles.infoListItem}>
+            <span style={styles.bulletIcon}>✓</span>
+            Start with weekly plans for better variety and balance
+          </li>
+          <li style={styles.infoListItem}>
+            <span style={styles.bulletIcon}>✓</span>
+            Target calories are calculated based on patient's BMR and activity level
+          </li>
+          <li style={styles.infoListItem}>
+            <span style={styles.bulletIcon}>✓</span>
+            Patient allergies are automatically excluded from food suggestions
+          </li>
+          <li style={styles.infoListItem}>
+            <span style={styles.bulletIcon}>✓</span>
+            You can add additional dietary restrictions like vegan, keto, etc.
+          </li>
+          <li style={styles.infoListItem}>
+            <span style={styles.bulletIcon}>✓</span>
+            Each meal can be auto-filled with AI suggestions or manually customized
+          </li>
+          <li style={styles.infoListItem}>
+            <span style={styles.bulletIcon}>✓</span>
+            Real-time Ayurvedic compliance feedback will guide your selections
+          </li>
         </ul>
       </div>
     </div>
@@ -247,148 +283,306 @@ const styles = {
   container: {
     display: 'grid',
     gridTemplateColumns: '2fr 1fr',
-    gap: '20px',
+    gap: '24px',
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '20px',
   },
   form: {
-    backgroundColor: '#fff',
-    padding: '30px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    backgroundColor: '#ffffff',
+    padding: '32px',
+    borderRadius: '12px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05)',
+    border: '1px solid #f0f0f0',
+  },
+  headerSection: {
+    marginBottom: '32px',
+    paddingBottom: '20px',
+    borderBottom: '2px solid #f5f5f5',
   },
   heading: {
-    margin: '0 0 25px 0',
-    fontSize: '20px',
-    color: '#333',
+    margin: '0 0 8px 0',
+    fontSize: '24px',
+    fontWeight: 700,
+    color: '#1a1a1a',
+    letterSpacing: '-0.5px',
+  },
+  subheading: {
+    margin: 0,
+    fontSize: '14px',
+    color: '#666',
+    fontWeight: 400,
   },
   formGroup: {
-    marginBottom: '25px',
+    marginBottom: '28px',
   },
   formRow: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gap: '20px',
-    marginBottom: '25px',
+    marginBottom: '28px',
   },
   label: {
     display: 'block',
-    marginBottom: '8px',
+    marginBottom: '10px',
     fontSize: '14px',
-    fontWeight: 'bold' as const,
-    color: '#555',
+    fontWeight: 600,
+    color: '#333',
+    letterSpacing: '0.2px',
+  },
+  required: {
+    color: '#ef4444',
+    marginLeft: '2px',
   },
   input: {
     width: '100%',
-    padding: '10px',
+    padding: '12px 14px',
     fontSize: '14px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
     boxSizing: 'border-box' as const,
+    transition: 'all 0.2s ease',
+    fontFamily: 'inherit',
+    outline: 'none',
+    backgroundColor: '#fff',
+  },
+  inputDisabled: {
+    backgroundColor: '#f9fafb',
+    color: '#9ca3af',
+    cursor: 'not-allowed',
   },
   radioGroup: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '12px',
+  },
+  radioCard: {
     display: 'flex',
-    gap: '20px',
+    alignItems: 'center',
+    padding: '16px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    backgroundColor: '#fff',
+  },
+  radioCardActive: {
+    borderColor: '#4CAF50',
+    backgroundColor: '#f0fdf4',
+    boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+  },
+  radioInput: {
+    margin: '0 12px 0 0',
+    cursor: 'pointer',
+    accentColor: '#4CAF50',
+  },
+  radioContent: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '2px',
   },
   radioLabel: {
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#333',
+  },
+  radioDays: {
+    fontSize: '12px',
+    color: '#666',
+  },
+  calorieInputWrapper: {
+    position: 'relative' as const,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  calorieInput: {
+    width: '100%',
+    padding: '12px 100px 12px 14px',
+    fontSize: '14px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
+    boxSizing: 'border-box' as const,
+    transition: 'all 0.2s ease',
+    fontFamily: 'inherit',
+    outline: 'none',
+  },
+  calorieUnit: {
+    position: 'absolute' as const,
+    right: '14px',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#666',
+    pointerEvents: 'none' as const,
+  },
+  hintBox: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    cursor: 'pointer',
+    marginTop: '8px',
+    padding: '10px 12px',
+    backgroundColor: '#f0f9ff',
+    borderRadius: '6px',
+    border: '1px solid #e0f2fe',
+  },
+  hintIcon: {
     fontSize: '14px',
   },
-  radio: {
-    cursor: 'pointer',
-  },
   hint: {
-    fontSize: '12px',
-    color: '#999',
-    margin: '5px 0 0 0',
+    fontSize: '13px',
+    color: '#0369a1',
+    margin: 0,
+    lineHeight: '1.5',
+  },
+  allergyIcon: {
+    marginRight: '6px',
   },
   tagContainer: {
     display: 'flex',
     flexWrap: 'wrap' as const,
-    gap: '8px',
-    marginTop: '10px',
+    gap: '10px',
+    marginTop: '12px',
   },
   allergyTag: {
-    backgroundColor: '#ffebee',
-    color: '#c62828',
-    padding: '6px 12px',
-    borderRadius: '12px',
+    backgroundColor: '#fef2f2',
+    color: '#dc2626',
+    padding: '8px 14px',
+    borderRadius: '20px',
     fontSize: '13px',
-    fontWeight: 'bold' as const,
+    fontWeight: 600,
+    border: '1px solid #fecaca',
+    display: 'inline-flex',
+    alignItems: 'center',
   },
   restrictionTag: {
-    backgroundColor: '#e3f2fd',
-    color: '#1976d2',
-    padding: '6px 12px',
-    borderRadius: '12px',
+    backgroundColor: '#eff6ff',
+    color: '#1e40af',
+    padding: '8px 14px',
+    borderRadius: '20px',
     fontSize: '13px',
-    display: 'flex',
+    fontWeight: 500,
+    border: '1px solid #dbeafe',
+    display: 'inline-flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: '8px',
+    transition: 'all 0.2s ease',
   },
   removeTagButton: {
     backgroundColor: 'transparent',
     border: 'none',
-    color: '#1976d2',
+    color: '#1e40af',
     cursor: 'pointer',
-    fontSize: '14px',
-    padding: 0,
-    fontWeight: 'bold' as const,
+    fontSize: '16px',
+    padding: '0 2px',
+    fontWeight: 700,
+    lineHeight: 1,
+    transition: 'color 0.2s ease',
   },
   addRestrictionRow: {
     display: 'flex',
-    gap: '10px',
+    gap: '12px',
   },
   restrictionInput: {
     flex: 1,
-    padding: '10px',
+    padding: '12px 14px',
     fontSize: '14px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
+    transition: 'all 0.2s ease',
+    outline: 'none',
   },
   addButton: {
-    padding: '10px 20px',
-    backgroundColor: '#2196F3',
+    padding: '12px 24px',
+    backgroundColor: '#2563eb',
     color: 'white',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontSize: '14px',
-    fontWeight: 'bold' as const,
+    fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
+  },
+  addButtonIcon: {
+    fontSize: '18px',
+    fontWeight: 700,
   },
   submitContainer: {
-    marginTop: '30px',
+    marginTop: '32px',
+    paddingTop: '24px',
+    borderTop: '2px solid #f5f5f5',
     textAlign: 'right' as const,
   },
   nextButton: {
-    padding: '12px 30px',
+    padding: '14px 32px',
     backgroundColor: '#4CAF50',
     color: 'white',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontSize: '16px',
-    fontWeight: 'bold' as const,
+    fontWeight: 600,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '10px',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 4px 6px rgba(76, 175, 80, 0.2)',
+  },
+  buttonArrow: {
+    fontSize: '18px',
+    fontWeight: 700,
   },
   infoPanel: {
-    backgroundColor: '#fff',
-    padding: '25px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    backgroundColor: '#ffffff',
+    padding: '28px',
+    borderRadius: '12px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05)',
+    border: '1px solid #f0f0f0',
     height: 'fit-content',
+    position: 'sticky' as const,
+    top: '20px',
+  },
+  infoPanelHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    marginBottom: '20px',
+    paddingBottom: '16px',
+    borderBottom: '2px solid #f5f5f5',
+  },
+  infoPanelIcon: {
+    fontSize: '20px',
   },
   infoPanelHeading: {
-    margin: '0 0 15px 0',
+    margin: 0,
     fontSize: '16px',
-    color: '#333',
+    fontWeight: 700,
+    color: '#1a1a1a',
+    letterSpacing: '-0.2px',
   },
   infoList: {
     margin: 0,
-    paddingLeft: '20px',
-    lineHeight: '1.8',
+    padding: 0,
+    listStyle: 'none',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '14px',
+  },
+  infoListItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '12px',
     fontSize: '14px',
-    color: '#666',
+    color: '#4b5563',
+    lineHeight: '1.6',
+  },
+  bulletIcon: {
+    color: '#4CAF50',
+    fontWeight: 700,
+    fontSize: '14px',
+    flexShrink: 0,
   },
 };
 

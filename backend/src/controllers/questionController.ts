@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {Question} from '../models/Questions';
 import { Assessment } from '../models/Questions';
 import Patient from '../models/Patient';
+import MedicalHistory from '../models/medicalHistory';
 
 // Get all questions
 export const getAllQuestions = async (req: Request, res: Response) => {
@@ -113,6 +114,15 @@ export const createAssessment = async (req: Request, res: Response) => {
     // Optional: Update patient's doshaType field
     await Patient.findByIdAndUpdate(patientId, { doshaType: resultDoshaType });
 
+    await MedicalHistory.create({
+      patientId: patientId,
+      eventType: 'assessment',
+      date: new Date(),
+      title: 'Prakriti Assessment Completed',
+      description: `Dosha constitution determined as: ${resultDoshaType.toUpperCase()}. Vata: ${percentages.vata}%, Pitta: ${percentages.pitta}%, Kapha: ${percentages.kapha}%`,
+      relatedData: { assessmentId: assessment._id },
+      createdBy: req.user?.userId
+    });
     res.status(201).json(assessment);
   } catch (error: any) {
     res.status(400).json({ message: error.message });

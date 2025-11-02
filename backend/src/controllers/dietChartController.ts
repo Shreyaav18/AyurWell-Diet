@@ -122,14 +122,12 @@ export const getPatientDietCharts = async (req: Request, res: Response) => {
     const { patientId } = req.params;
     const charts = await DietChart.find({ patientId })
       .sort({ createdAt: -1 })
-      .populate('createdBy', 'name email');
-    
+      
     res.status(200).json(charts);
-  } catch (error: any) {
+  } catch (error: any) { // This will show in server console
     res.status(500).json({ message: error.message });
   }
 };
-
 // Get single diet chart
 export const getDietChartById = async (req: Request, res: Response) => {
   try {

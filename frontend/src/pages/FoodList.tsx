@@ -137,7 +137,10 @@ const FoodList: React.FC = () => {
   const fetchFoods = async () => {
     setLoading(true);
     try {
-      const response = await foodService.getAll({ category, search });
+      const response = await foodService.getAllFoods({
+        search: search || undefined,
+        category: category || undefined
+      });
       setFoods(response.data.foods);
     } catch (error) {
       console.error('Failed to fetch foods', error);
