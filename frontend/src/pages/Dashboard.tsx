@@ -123,7 +123,7 @@ const Dashboard: React.FC = () => {
               <h4 style={styles.footerHeading}>Support</h4>
               <ul style={styles.footerList}>
                 <li><button onClick={() => {}} style={styles.footerLink}>Help Center</button></li>
-                <li><button onClick={() => {}} style={{...styles.footerLink}}>Contact Us</button></li>
+                <li><button onClick={() => {}} style={styles.footerLink}>Contact Us</button></li>
                 <li><button onClick={() => {}} style={styles.footerLink}>Privacy Policy</button></li>
               </ul>
             </div>
