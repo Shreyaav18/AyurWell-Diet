@@ -9,6 +9,7 @@
     "start": "node dist/server.js",
     "seed:foods": "ts-node src/scripts/seedfood.ts",
     "seed:questions": "ts-node src/scripts/seedQuestions.ts",
+    "seed:patients": "ts-node src/scripts/patients.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
