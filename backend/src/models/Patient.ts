@@ -16,7 +16,7 @@ const patientSchema = new Schema<IPatient>(
     },
     gender: {
       type: String,
-      enum: ['male', 'female', 'other'],
+      enum: ['male', 'female', 'other', 'Male', 'Female'],
       required: [true, 'Gender is required']
     },
     doshaType: {
