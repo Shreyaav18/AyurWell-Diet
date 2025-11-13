@@ -201,7 +201,17 @@ const DayPlanEditor: React.FC<DayPlanEditorProps> = ({
     <div style={styles.container}>
       {/* Day Navigation */}
       <div style={styles.dayNavigation}>
-        <h3 style={styles.dayTitle}>Day {currentDay.dayNumber}</h3>
+        <div style={styles.navigationHeader}>
+          <div style={styles.dayTitleContainer}>
+            <span style={styles.dayIcon}>📅</span>
+            <h3 style={styles.dayTitle}>Day {currentDay.dayNumber}</h3>
+          </div>
+          <div style={styles.dayInfo}>
+            <span style={styles.infoLabel}>Target: </span>
+            <span style={styles.infoValue}>{targetCalories} cal</span>
+          </div>
+        </div>
+        
         <div style={styles.dayTabs}>
           {dayPlans.map((day, index) => (
             <button
@@ -211,6 +221,20 @@ const DayPlanEditor: React.FC<DayPlanEditorProps> = ({
                 ...(index === currentDayIndex ? styles.dayTabActive : {})
               }}
               onClick={() => setCurrentDayIndex(index)}
+              onMouseOver={(e) => {
+                if (index !== currentDayIndex) {
+                  e.currentTarget.style.backgroundColor = '#D9E9CF';
+                  e.currentTarget.style.borderColor = '#B6CEB4';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (index !== currentDayIndex) {
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.borderColor = '#D9E9CF';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
             >
               Day {day.dayNumber}
             </button>
@@ -257,42 +281,92 @@ const DayPlanEditor: React.FC<DayPlanEditorProps> = ({
 
 const styles = {
   container: {
-    padding: '20px',
+    padding: '1.5rem',
+    minHeight: '100vh',
+    background: 'linear-gradient(to bottom, #F0F0F0 0%, rgba(217, 233, 207, 0.3) 100%)',
   },
   dayNavigation: {
-    marginBottom: '20px',
-    borderBottom: '2px solid #e0e0e0',
-    paddingBottom: '15px',
+    marginBottom: '2rem',
+    backgroundColor: 'white',
+    borderRadius: '1rem',
+    padding: '1.5rem',
+    boxShadow: '0 4px 12px rgba(150, 167, 141, 0.1)',
+    border: '1px solid #D9E9CF',
+  },
+  navigationHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '1.25rem',
+    paddingBottom: '1rem',
+    borderBottom: '2px solid #D9E9CF',
+  },
+  dayTitleContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+  },
+  dayIcon: {
+    fontSize: '1.5rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dayTitle: {
-    margin: '0 0 15px 0',
-    fontSize: '20px',
-    color: '#333',
+    margin: '0',
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#2d3748',
+    letterSpacing: '-0.01em',
+  },
+  dayInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.5rem 1rem',
+    backgroundColor: 'rgba(150, 167, 141, 0.1)',
+    borderRadius: '0.5rem',
+    border: '1px solid #D9E9CF',
+  },
+  infoLabel: {
+    fontSize: '0.875rem',
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  infoValue: {
+    fontSize: '0.875rem',
+    fontWeight: '700',
+    color: '#96A78D',
   },
   dayTabs: {
     display: 'flex',
-    gap: '8px',
+    gap: '0.75rem',
     flexWrap: 'wrap' as const,
   },
   dayTab: {
-    padding: '8px 16px',
-    backgroundColor: '#f5f5f5',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
+    padding: '0.625rem 1.25rem',
+    backgroundColor: 'white',
+    border: '2px solid #D9E9CF',
+    borderRadius: '0.625rem',
     cursor: 'pointer',
-    fontSize: '14px',
-    color: '#666',
+    fontSize: '0.875rem',
+    fontWeight: '600',
+    color: '#64748b',
+    transition: 'all 0.3s ease',
+    outline: 'none',
   },
   dayTabActive: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#96A78D',
     color: 'white',
-    borderColor: '#2196F3',
-    fontWeight: 'bold' as const,
+    borderColor: '#96A78D',
+    fontWeight: '700',
+    boxShadow: '0 4px 8px rgba(150, 167, 141, 0.25)',
+    transform: 'translateY(-2px)',
   },
   mealsContainer: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '20px',
+    gap: '1.25rem',
   },
 };
 

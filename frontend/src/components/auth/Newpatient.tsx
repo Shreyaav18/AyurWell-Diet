@@ -9,19 +9,17 @@ const Newpatient: React.FC = () => {
       age: 0,
       gender: '',
       doshaType: '',
-      medicalConditions: '',  // comma-separated string
-      allergies: '',           // comma-separated string
+      medicalConditions: '',
+      allergies: '',
       height: 0,
       weight: 0,
-      activityLevel: 'moderate',           // Default value
-  
+      activityLevel: 'moderate',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const validateForm = ():boolean => {
-  // Check required fields
     if (!formData.name.trim()) {
       setError('Patient name is required');
       return false;
@@ -52,23 +50,20 @@ const Newpatient: React.FC = () => {
       return false;
     }
     
-    
-    // All validations passed
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     
-    setError(''); // Clear any previous errors
-    setLoading(true); // Show loading state
+    setError('');
+    setLoading(true);
     if(!validateForm()) {
         setLoading(false);
         return;
-      }
+    }
     
     try {
-      // Prepare the data - convert strings to arrays for medicalConditions and allergies
       const patientData = {
         name: formData.name,
         age: Number(formData.age),
@@ -87,24 +82,23 @@ const Newpatient: React.FC = () => {
         activityLevel: formData.activityLevel,
       };
       
-      // Call the patient service to create patient
       await patientService.create(patientData);
-      
-      // On success, navigate to patient list or detail page
-      navigate('/patients'); // or wherever you want to redirect
+      navigate('/patients');
       
     } catch (err: any) {
-      // Handle errors
       setError(err.response?.data?.message || 'Failed to create patient. Please try again.');
     } finally {
-      setLoading(false); // Always set loading to false when done
+      setLoading(false);
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.heading}>New Patient</h2>
+        <div style={styles.cardHeader}>
+          <h2 style={styles.heading}>New Patient Registration</h2>
+          <p style={styles.subheading}>Add a new patient to your Ayurvedic practice</p>
+        </div>
 
         {error && (
           <div style={styles.error}>
@@ -113,177 +107,360 @@ const Newpatient: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit}>
-        
-            <label style={styles.label}>Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              style={styles.input}
-            />
+          {/* Personal Information Section */}
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>Personal Information</h3>
+            <div style={styles.formGrid}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Full Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  style={styles.input}
+                  placeholder="Enter patient name"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
 
-            <label style={styles.label}>Age</label>
-            <input
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
-              style={styles.input}
-            />
-            
-            <label style={styles.label}>Height (cm)</label>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Age *</label>
+                <input
+                  type="number"
+                  name="age"
+                  value={formData.age}
+                  onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
+                  style={styles.input}
+                  placeholder="Enter age"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
 
-            <input
-              type="number" 
-              name="height"
-              value={formData.height}
-              onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
-              style={styles.input}
-            />
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Gender *</label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  style={styles.input}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
 
-            <label style={styles.label}>Weight (kg)</label>
-            <input 
-              type="number"
-              name="weight"
-              value={formData.weight}
-              onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
-              style={styles.input}
-            />
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Dosha Type *</label>
+                <select 
+                  name="doshaType"
+                  value={formData.doshaType}
+                  onChange={(e) => setFormData({ ...formData, doshaType: e.target.value })}
+                  style={styles.input}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="">Select Dosha Type</option>
+                  <option value="vata">Vata</option>
+                  <option value="pitta">Pitta</option>
+                  <option value="kapha">Kapha</option>
+                  <option value="vata-pitta">Vata-Pitta</option>
+                  <option value="pitta-kapha">Pitta-Kapha</option>
+                  <option value="vata-kapha">Vata-Kapha</option>
+                  <option value="tridosha">Tridosha</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
-            <label style={styles.label}>Gender</label>
-            <select
-                name="gender"
-                value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                style={styles.input}
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
+          {/* Physical Measurements Section */}
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>Physical Measurements</h3>
+            <div style={styles.formGrid}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Height (cm) *</label>
+                <input
+                  type="number" 
+                  name="height"
+                  value={formData.height}
+                  onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
+                  style={styles.input}
+                  placeholder="Enter height"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
 
-            <label style={styles.label}>Dosha Type</label>
-            <select 
-              name="doshaType"
-              value={formData.doshaType}
-              onChange={(e) => setFormData({ ...formData, doshaType: e.target.value })}
-              style={styles.input}
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Weight (kg) *</label>
+                <input 
+                  type="number"
+                  name="weight"
+                  value={formData.weight}
+                  onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
+                  style={styles.input}
+                  placeholder="Enter weight"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Activity Level *</label>
+                <select
+                  name="activityLevel"
+                  value={formData.activityLevel}
+                  onChange={(e) => setFormData({ ...formData, activityLevel: e.target.value })}
+                  style={styles.input}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="sedentary">Sedentary</option>
+                  <option value="light">Light</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="active">Active</option>
+                  <option value="very-active">Very Active</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Medical Information Section */}
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>Medical Information</h3>
+            <div style={styles.formGrid}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Medical Conditions</label>
+                <input
+                  type="text"
+                  name="medicalConditions"
+                  value={formData.medicalConditions}
+                  onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
+                  style={styles.input}
+                  placeholder="Comma-separated conditions"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Allergies</label>
+                <input
+                  type="text"
+                  name="allergies"
+                  value={formData.allergies}
+                  onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
+                  style={styles.input}
+                  placeholder="Comma-separated allergies"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#96A78D';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(150, 167, 141, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#D9E9CF';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div style={styles.buttonContainer}>
+            <button 
+              type="submit" 
+              style={{
+                ...styles.button,
+                opacity: loading ? 0.7 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer'
+              }}
+              disabled={loading}
+              onMouseOver={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor = '#7d8f78';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 16px rgba(150, 167, 141, 0.3)';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor = '#96A78D';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(150, 167, 141, 0.2)';
+                }
+              }}
             >
-              <option value="">Select Dosha Type</option>
-              <option value="vata">Vata</option>
-              <option value="pitta">Pitta</option>
-              <option value="kapha">Kapha</option>
-              <option value="vata-pitta">Vata-Pitta</option>
-              <option value="pitta-kapha">Pitta-Kapha</option>
-              <option value="vata-kapha">Vata-Kapha</option>
-              <option value="tridosha">Tridosha</option>
-            </select>         
-      
-
-            <label style={styles.label}>Medical Conditions</label>
-            <input
-              type="text"
-              name="medicalConditions"
-              value={formData.medicalConditions}
-              onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
-              style={styles.input}
-            />
-
-
-            <label style={styles.label}>Allergies</label>
-            <input
-              type="text"
-              name="allergies"
-              value={formData.allergies}
-              onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-              style={styles.input}
-            /> 
-            
-          
-            <label style={styles.label}>Activity Level</label>
-            <select
-              name="activityLevel"
-              value={formData.activityLevel}
-              onChange={(e) => setFormData({ ...formData, activityLevel: e.target.value })}
-              style={styles.input} 
-            
-            >
-              <option value="sedentary">Sedentary</option>
-              <option value="light">Light</option>
-              <option value="moderate">Moderate</option>
-              <option value="active">Active</option>
-              <option value="very-active">Very Active</option>
-            </select>
-
-          <button 
-            type="submit" 
-            style={{
-              ...styles.button,
-              opacity: loading ? 0.6 : 1,
-              cursor: loading ? 'not-allowed' : 'pointer'
-            }}
-            disabled={loading}
-          >
-            {loading ? 'Creating...' : 'Create Patient'}
-          </button>
-
+              {loading ? 'Creating Patient...' : 'Create Patient'}
+            </button>
+          </div>
         </form>
+      </div>
     </div>
-  </div>
-    );
+  );
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
+    minHeight: '100vh',
+    background: 'linear-gradient(to bottom, #F0F0F0, #D9E9CF)',
+    padding: '3rem 1.5rem',
     display: 'flex',
-    justifyContent: 'center', 
+    justifyContent: 'center',
     alignItems: 'center',
-    height: '80%',
-    backgroundColor: '#f0f2f5',
-    borderRadius: '30px',
   },
   card: {
-    backgroundColor: '#fff',  
-    padding: '30px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-    width: '400px',
+    backgroundColor: '#fff',
+    padding: '2.5rem',
+    borderRadius: '1.25rem',
+    boxShadow: '0 10px 40px rgba(150, 167, 141, 0.15)',
+    maxWidth: '1200px',
+    width: '100%',
+    border: '2px solid #D9E9CF',
+  },
+  cardHeader: {
+    marginBottom: '2.5rem',
+    textAlign: 'center',
+    paddingBottom: '1.5rem',
+    borderBottom: '2px solid #D9E9CF',
   },
   heading: {
-    marginBottom: '20px',
-    textAlign: 'center'
+    fontSize: '2rem',
+    fontWeight: '700',
+    color: '#2d3748',
+    marginBottom: '0.5rem',
+    margin: 0,
+    letterSpacing: '-0.02em',
+  },
+  subheading: {
+    fontSize: '1rem',
+    color: '#64748b',
+    margin: '0.5rem 0 0 0',
+  },
+  section: {
+    marginBottom: '2rem',
+  },
+  sectionTitle: {
+    fontSize: '1.125rem',
+    fontWeight: '600',
+    color: '#96A78D',
+    marginBottom: '1.25rem',
+    paddingBottom: '0.5rem',
+    borderBottom: '1px solid #D9E9CF',
+    margin: '0 0 1.25rem 0',
+  },
+  formGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '1.25rem',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
   },
   label: {
     display: 'block',
-    marginBottom: '8px',
-    fontWeight: 'bold',
+    marginBottom: '0.5rem',
+    fontWeight: '600',
+    fontSize: '0.875rem',
+    color: '#4a5568',
+    letterSpacing: '0.01em',
   },
   input: {
     width: '100%',
-    padding: '8px',
-    marginBottom: '16px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    boxSizing: 'border-box'
-  }
-  ,  button: {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#4CAF50',
+    padding: '0.75rem 1rem',
+    borderRadius: '0.625rem',
+    border: '2px solid #D9E9CF',
+    boxSizing: 'border-box',
+    fontSize: '0.9375rem',
+    transition: 'all 0.3s ease',
+    outline: 'none',
+    backgroundColor: '#fafafa',
+  },
+  buttonContainer: {
+    marginTop: '2rem',
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '1.5rem',
+    borderTop: '1px solid #D9E9CF',
+  },
+  button: {
+    minWidth: '250px',
+    padding: '0.875rem 2rem',
+    backgroundColor: '#96A78D',
     color: 'white',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '0.75rem',
     cursor: 'pointer',
-    fontSize: '16px',
+    fontSize: '1rem',
+    fontWeight: '600',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    letterSpacing: '0.02em',
+    boxShadow: '0 4px 12px rgba(150, 167, 141, 0.2)',
   },
   error: {
-    marginBottom: '16px',
-    color: 'red',
-    textAlign: 'center'
+    marginBottom: '1.5rem',
+    padding: '1rem 1.25rem',
+    color: '#991b1b',
+    backgroundColor: '#fee2e2',
+    border: '1px solid #fca5a5',
+    borderRadius: '0.75rem',
+    textAlign: 'center',
+    fontSize: '0.9375rem',
+    fontWeight: '500',
   }
-
-}
+};
 
 export default Newpatient;

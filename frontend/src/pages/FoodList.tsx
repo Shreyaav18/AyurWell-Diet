@@ -133,6 +133,7 @@ const FoodList: React.FC = () => {
       console.error('Failed to fetch categories', error);
     }
   };
+  
 
   const fetchFoods = async () => {
     setLoading(true);
@@ -141,6 +142,38 @@ const FoodList: React.FC = () => {
         search: search || undefined,
         category: category || undefined
       });
+      setFoods(response.data.foods);
+    } catch (error) {
+      console.error('Failed to fetch foods', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCategories();
+  fetchFoods();
+}, [category, search]);
+
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const response = await foodService.getCategories();
+      console.log('Categories response:', response); // Add this
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.error('Failed to fetch categories', error);
+    }
+  };
+
+  const fetchFoods = async () => {
+    setLoading(true);
+    try {
+      const response = await foodService.getAllFoods({
+        search: search || undefined,
+        category: category || undefined
+      });
+      console.log('Foods response:', response); // Add this
+      console.log('Foods array:', response.data.foods); // Add this
       setFoods(response.data.foods);
     } catch (error) {
       console.error('Failed to fetch foods', error);

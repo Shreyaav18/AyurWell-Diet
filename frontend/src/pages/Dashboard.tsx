@@ -375,9 +375,9 @@ const styles = {
     fontSize: '1.5rem',
     fontWeight: '700',
     marginBottom: '0.75rem',
-    color: '#2d3748',
+    color: '#007686ff',
     margin: '0 0 0.75rem 0',
-    letterSpacing: '-0.01em',
+    letterSpacing: '-0.01ems',
   },
   cardDescription: {
     color: '#64748b',
