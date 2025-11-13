@@ -39,16 +39,20 @@ const Dashboard: React.FC = () => {
           </h1>
           <div style={styles.navRight}>
             <span style={styles.welcomeText}>
-              {user?.firstName} {user?.lastName}
+              Welcome, {user?.firstName} {user?.lastName}
             </span>
             <button
               onClick={handleLogout}
               style={styles.logoutButton}
               onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = '#dc2626';
+                e.currentTarget.style.backgroundColor = '#7d8f78';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(125, 143, 120, 0.3)';
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = '#ef4444';
+                e.currentTarget.style.backgroundColor = '#96A78D';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
               }}
             >
               Logout
@@ -73,6 +77,7 @@ const Dashboard: React.FC = () => {
             <div style={styles.cardIcon}>👥</div>
             <h3 style={styles.cardTitle}>Patients</h3>
             <p style={styles.cardDescription}>Manage and track patient profiles, health records, and treatment plans</p>
+            <div style={styles.cardArrow}>→</div>
           </Link>
 
           <Link 
@@ -84,6 +89,7 @@ const Dashboard: React.FC = () => {
             <div style={styles.cardIcon}>🥗</div>
             <h3 style={styles.cardTitle}>Food Database</h3>
             <p style={styles.cardDescription}>Browse comprehensive Ayurvedic food items and their properties</p>
+            <div style={styles.cardArrow}>→</div>
           </Link>
 
           <div 
@@ -113,18 +119,72 @@ const Dashboard: React.FC = () => {
             <div style={styles.footerSection}>
               <h4 style={styles.footerHeading}>Quick Links</h4>
               <ul style={styles.footerList}>
-                <li><Link to="/patients" style={styles.footerLink}>Patients</Link></li>
-                <li><Link to="/foods" style={styles.footerLink}>Food Database</Link></li>
-                <li><button onClick={() => {}} style={styles.footerLink}>Documentation</button></li>
+                <li>
+                  <Link 
+                    to="/patients" 
+                    style={styles.footerLink}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#96A78D'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}
+                  >
+                    Patients
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/foods" 
+                    style={styles.footerLink}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#96A78D'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}
+                  >
+                    Food Database
+                  </Link>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => {}} 
+                    style={styles.footerLinkButton}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#96A78D'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}
+                  >
+                    Documentation
+                  </button>
+                </li>
               </ul>
             </div>
             
             <div style={styles.footerSection}>
               <h4 style={styles.footerHeading}>Support</h4>
               <ul style={styles.footerList}>
-                <li><button onClick={() => {}} style={styles.footerLink}>Help Center</button></li>
-                <li><button onClick={() => {}} style={styles.footerLink}>Contact Us</button></li>
-                <li><button onClick={() => {}} style={styles.footerLink}>Privacy Policy</button></li>
+                <li>
+                  <button 
+                    onClick={() => {}} 
+                    style={styles.footerLinkButton}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#96A78D'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}
+                  >
+                    Help Center
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => {}} 
+                    style={styles.footerLinkButton}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#96A78D'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}
+                  >
+                    Contact Us
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => {}} 
+                    style={styles.footerLinkButton}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#96A78D'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}
+                  >
+                    Privacy Policy
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -142,10 +202,17 @@ const Dashboard: React.FC = () => {
           @keyframes fadeIn {
             from {
               opacity: 0;
+              transform: translateY(10px);
             }
             to {
               opacity: 1;
+              transform: translateY(0);
             }
+          }
+
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
           }
 
           @media (max-width: 640px) {
@@ -165,17 +232,19 @@ const Dashboard: React.FC = () => {
 const styles = {
   container: {
     minHeight: '100vh',
-    backgroundColor: '#f8fafc',
+    background: 'linear-gradient(to bottom, #F0F0F0, #D9E9CF)',
     display: 'flex',
     flexDirection: 'column' as const,
   },
   nav: {
-    backgroundColor: '#ffffff',
-    borderBottom: '1px solid #e2e8f0',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backdropFilter: 'blur(10px)',
+    borderBottom: '1px solid #D9E9CF',
     padding: '1rem 1.5rem',
     position: 'sticky' as const,
     top: 0,
     zIndex: 50,
+    boxShadow: '0 2px 8px rgba(150, 167, 141, 0.1)',
   },
   navContent: {
     maxWidth: '1280px',
@@ -188,8 +257,8 @@ const styles = {
   },
   navTitle: {
     fontSize: '1.5rem',
-    fontWeight: '600',
-    color: '#0f172a',
+    fontWeight: '700',
+    color: '#2d3748',
     letterSpacing: '-0.025em',
     display: 'flex',
     alignItems: 'center',
@@ -197,14 +266,15 @@ const styles = {
     margin: 0,
   },
   logoIcon: {
-    width: '2rem',
-    height: '2rem',
-    borderRadius: '0.5rem',
-    backgroundColor: '#10b981',
+    width: '2.25rem',
+    height: '2.25rem',
+    borderRadius: '0.625rem',
+    background: 'linear-gradient(135deg, #96A78D, #B6CEB4)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '1.125rem',
+    fontSize: '1.25rem',
+    boxShadow: '0 2px 8px rgba(150, 167, 141, 0.3)',
   },
   navRight: {
     display: 'flex',
@@ -212,20 +282,21 @@ const styles = {
     gap: '1.25rem',
   },
   welcomeText: {
-    color: '#475569',
+    color: '#4a5568',
     fontWeight: '500',
-    fontSize: '0.875rem',
+    fontSize: '0.9375rem',
   },
   logoutButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#96A78D',
     color: 'white',
-    padding: '0.5rem 1rem',
-    borderRadius: '0.375rem',
+    padding: '0.625rem 1.25rem',
+    borderRadius: '0.5rem',
     border: 'none',
     cursor: 'pointer',
-    transition: 'background-color 0.2s ease',
-    fontWeight: '500',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    fontWeight: '600',
     fontSize: '0.875rem',
+    letterSpacing: '0.01em',
   },
   mainContent: {
     flex: 1,
@@ -233,23 +304,28 @@ const styles = {
     width: '100%',
     margin: '0 auto',
     padding: '3rem 1.5rem',
-    animation: 'fadeIn 0.4s ease-out',
+    animation: 'fadeIn 0.6s ease-out',
   },
   header: {
-    marginBottom: '2.5rem',
+    marginBottom: '3rem',
+    textAlign: 'center' as const,
   },
   headerTitle: {
-    fontSize: '2rem',
+    fontSize: '2.5rem',
     fontWeight: '700',
-    color: '#0f172a',
+    background: 'linear-gradient(135deg, #96A78D, #7d8f78)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
     marginBottom: '0.5rem',
     margin: 0,
+    letterSpacing: '-0.02em',
   },
   headerSubtitle: {
-    fontSize: '1rem',
+    fontSize: '1.125rem',
     color: '#64748b',
     fontWeight: '400',
-    margin: '0.5rem 0 0 0',
+    margin: '0.75rem 0 0 0',
   },
   grid: {
     display: 'grid',
@@ -259,66 +335,82 @@ const styles = {
   gridMd: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-    gap: '1.5rem',
+    gap: '2rem',
   },
   card: {
-    backgroundColor: '#ffffff',
-    padding: '1.75rem',
-    borderRadius: '0.75rem',
-    border: '1px solid #e2e8f0',
+    backgroundColor: 'white',
+    padding: '2rem',
+    borderRadius: '1rem',
+    border: '2px solid #D9E9CF',
     textDecoration: 'none',
     display: 'block',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
     position: 'relative' as const,
     overflow: 'hidden',
+    boxShadow: '0 4px 12px rgba(150, 167, 141, 0.08)',
   },
   cardActive: {
-    transform: 'translateY(-4px)',
-    boxShadow: '0 12px 24px -4px rgba(0, 0, 0, 0.08)',
-    borderColor: '#cbd5e1',
+    transform: 'translateY(-8px) scale(1.02)',
+    boxShadow: '0 20px 40px rgba(150, 167, 141, 0.2)',
+    borderColor: '#B6CEB4',
   },
   cardInactive: {
     opacity: 0.6,
     cursor: 'not-allowed',
   },
   cardIcon: {
-    width: '3rem',
-    height: '3rem',
-    borderRadius: '0.5rem',
-    backgroundColor: '#f1f5f9',
+    width: '3.5rem',
+    height: '3.5rem',
+    borderRadius: '0.75rem',
+    background: 'linear-gradient(135deg, #D9E9CF, #B6CEB4)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: '1.25rem',
-    fontSize: '1.5rem',
+    marginBottom: '1.5rem',
+    fontSize: '1.75rem',
+    boxShadow: '0 4px 12px rgba(150, 167, 141, 0.15)',
+    transition: 'all 0.3s ease',
   },
   cardTitle: {
-    fontSize: '1.25rem',
-    fontWeight: '600',
-    marginBottom: '0.5rem',
-    color: '#0f172a',
-    margin: '0 0 0.5rem 0',
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    marginBottom: '0.75rem',
+    color: '#2d3748',
+    margin: '0 0 0.75rem 0',
+    letterSpacing: '-0.01em',
   },
   cardDescription: {
     color: '#64748b',
     margin: 0,
-    fontSize: '0.875rem',
-    lineHeight: '1.6',
+    fontSize: '0.9375rem',
+    lineHeight: '1.7',
+  },
+  cardArrow: {
+    position: 'absolute' as const,
+    bottom: '2rem',
+    right: '2rem',
+    fontSize: '1.5rem',
+    color: '#96A78D',
+    transition: 'all 0.3s ease',
+    opacity: 0.6,
   },
   comingSoonBadge: {
     position: 'absolute' as const,
-    top: '1rem',
-    right: '1rem',
-    backgroundColor: '#fef3c7',
+    top: '1.25rem',
+    right: '1.25rem',
+    background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
     color: '#92400e',
-    padding: '0.25rem 0.625rem',
-    borderRadius: '0.25rem',
+    padding: '0.375rem 0.875rem',
+    borderRadius: '0.5rem',
     fontSize: '0.75rem',
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: '0.05em',
+    boxShadow: '0 2px 8px rgba(146, 64, 14, 0.15)',
   },
   footer: {
-    backgroundColor: '#ffffff',
-    borderTop: '1px solid #e2e8f0',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backdropFilter: 'blur(10px)',
+    borderTop: '2px solid #D9E9CF',
     marginTop: 'auto',
   },
   footerContent: {
@@ -328,48 +420,49 @@ const styles = {
   },
   footerGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '2rem',
-    marginBottom: '2rem',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    gap: '2.5rem',
+    marginBottom: '2.5rem',
   },
   footerSection: {
     display: 'flex',
     flexDirection: 'column' as const,
   },
   footerTitle: {
-    fontSize: '1.125rem',
-    fontWeight: '600',
-    color: '#0f172a',
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: '#2d3748',
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
-    marginBottom: '0.75rem',
-    margin: '0 0 0.75rem 0',
+    marginBottom: '1rem',
+    margin: '0 0 1rem 0',
   },
   footerLogoIcon: {
-    width: '1.5rem',
-    height: '1.5rem',
-    borderRadius: '0.375rem',
-    backgroundColor: '#10b981',
+    width: '1.75rem',
+    height: '1.75rem',
+    borderRadius: '0.5rem',
+    background: 'linear-gradient(135deg, #96A78D, #B6CEB4)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '0.875rem',
+    fontSize: '1rem',
+    boxShadow: '0 2px 6px rgba(150, 167, 141, 0.25)',
   },
   footerText: {
     color: '#64748b',
-    fontSize: '0.875rem',
-    lineHeight: '1.6',
+    fontSize: '0.9375rem',
+    lineHeight: '1.7',
     margin: 0,
   },
   footerHeading: {
     fontSize: '0.875rem',
-    fontWeight: '600',
-    color: '#0f172a',
-    marginBottom: '0.75rem',
+    fontWeight: '700',
+    color: '#2d3748',
+    marginBottom: '1rem',
     textTransform: 'uppercase' as const,
-    letterSpacing: '0.05em',
-    margin: '0 0 0.75rem 0',
+    letterSpacing: '0.075em',
+    margin: '0 0 1rem 0',
   },
   footerList: {
     listStyle: 'none',
@@ -377,17 +470,29 @@ const styles = {
     margin: 0,
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '0.5rem',
+    gap: '0.625rem',
   },
   footerLink: {
     color: '#64748b',
     textDecoration: 'none',
-    fontSize: '0.875rem',
-    transition: 'color 0.2s ease',
+    fontSize: '0.9375rem',
+    transition: 'all 0.2s ease',
+    display: 'inline-block',
+  },
+  footerLinkButton: {
+    color: '#64748b',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+    textDecoration: 'none',
+    fontSize: '0.9375rem',
+    transition: 'all 0.2s ease',
+    textAlign: 'left' as const,
   },
   footerBottom: {
-    paddingTop: '1.5rem',
-    borderTop: '1px solid #e2e8f0',
+    paddingTop: '2rem',
+    borderTop: '1px solid #D9E9CF',
   },
   footerCopyright: {
     textAlign: 'center' as const,
