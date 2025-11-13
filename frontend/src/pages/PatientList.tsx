@@ -122,14 +122,14 @@ const PatientList: React.FC = () => {
           {/* Stats Cards */}
           <div style={styles.statsGrid}>
             <div style={styles.statCard}>
-              <div style={styles.statIcon}>👥</div>
+
               <div style={styles.statContent}>
                 <div style={styles.statValue}>{patients.length}</div>
                 <div style={styles.statLabel}>Total Patients</div>
               </div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statIcon}>🌱</div>
+              
               <div style={styles.statContent}>
                 <div style={styles.statValue}>
                   {patients.filter(p => p.doshaType.includes('vata')).length}
@@ -138,7 +138,7 @@ const PatientList: React.FC = () => {
               </div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statIcon}>🔥</div>
+              
               <div style={styles.statContent}>
                 <div style={styles.statValue}>
                   {patients.filter(p => p.doshaType.includes('pitta')).length}
@@ -147,7 +147,7 @@ const PatientList: React.FC = () => {
               </div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statIcon}>💧</div>
+              
               <div style={styles.statContent}>
                 <div style={styles.statValue}>
                   {patients.filter(p => p.doshaType.includes('kapha')).length}
@@ -174,18 +174,18 @@ const PatientList: React.FC = () => {
                 e.currentTarget.style.boxShadow = 'none';
               }}
             />
-            <span style={styles.searchIcon}>🔍</span>
+            <span style={styles.searchIcon}></span>
           </div>
 
           {/* Patients Table */}
           {loading ? (
             <div style={styles.loading}>
-              <div style={styles.loadingSpinner}>⏳</div>
+              <div style={styles.loadingSpinner}></div>
               <p>Loading patients...</p>
             </div>
           ) : filteredPatients.length === 0 ? (
             <div style={styles.emptyState}>
-              <div style={styles.emptyIcon}>👤</div>
+              <div style={styles.emptyIcon}></div>
               <h3 style={styles.emptyTitle}>No patients found</h3>
               <p style={styles.emptyText}>
                 {searchTerm ? 'Try adjusting your search' : 'Get started by adding your first patient'}

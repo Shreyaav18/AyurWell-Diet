@@ -150,7 +150,7 @@ const FoodList: React.FC = () => {
           <div style={styles.filterContainer}>
             <div style={getFilterGridStyle()}>
               <div style={styles.inputWrapper}>
-                <span style={styles.inputIcon}>🔍</span>
+                <span style={styles.inputIcon}></span>
                 <input
                   type="text"
                   placeholder="Search foods by name..."
@@ -168,7 +168,7 @@ const FoodList: React.FC = () => {
                 />
               </div>
               <div style={styles.inputWrapper}>
-                <span style={styles.inputIcon}>📁</span>
+                <span style={styles.inputIcon}></span>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
